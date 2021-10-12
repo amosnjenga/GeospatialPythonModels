@@ -28,12 +28,13 @@ def stretch(a):
         for i in range(256):
             lut.append(n/step)
             n = n + hist[i+b]
-            gd.numpy.take(lut,a,out=a)
+            #gd.numpy.take(lut,a,out=a)
+            a.take(lut,out=None)
             return a
 
 #LOADING THE NDVI
 #NDVI output from the ndvi script
-source = "ndvi.tif"
+source = "F:/Python Projects/GeospatialPythonModels/NDVI/ndvi.tiff"
 
 #Target file name for classified image
 target = "ndvi_color.tif"
@@ -65,10 +66,11 @@ start = 1
 ##CLASSIFY IMAGE
 #For each class value range,grab values within range
 #,then filter values through the mask.
-mask = gd.numpy.logical_and(start<= ndvi,ndvi<=classes[i])
-for j in range(len(lut[i])):
-    rgb[j] = gd.numpy.choose(mask,(rgb[j],lut[i],j))
-    start = classes[i] + 1
+for i in range(len(classes)):
+    mask = gd.numpy.logical_and(start<= ndvi,ndvi<=classes[i])
+    for j in range(len(lut[i])):
+        rgb[j] = gd.numpy.choose(mask,(rgb[j],lut[i][j]))
+        start = classes[i] + 1
 
 #Save a geotiff image of the colored ndvi
     output = gd.SaveArray(rgb,target,format="GTiff",prototype=source)

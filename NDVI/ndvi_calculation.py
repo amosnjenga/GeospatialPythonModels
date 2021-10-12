@@ -2,6 +2,7 @@
 import gdal
 from osgeo import gdal
 from osgeo import gdal_array
+from osgeo import gdalnumeric
 from osgeo import ogr
 try:
     from PIL import Image
@@ -45,7 +46,7 @@ def copy_geo(array,prototype=None,xoffset=0,yoffset=0):
     #have red and infrared bands
 
 #input band
-source = "farm.tif"
+source = "./data/farm.tif"
 
 #output geotiff file name
 target = "ndvi.tiff"
@@ -66,7 +67,7 @@ ir = srcArray[2]
 #clip a field out of the bands using a field boundary shapefile
 
 #create an OGR layer from a field boundary shapefile
-field = ogr.Open("field.shp")
+field = ogr.Open("./data/field.shp")
 #must define a 'layer' to keep OGR happy
 lyr = field.GetLayer('field')
 
@@ -76,7 +77,7 @@ poly = lyr.GetNextFeature()
 #Convert the layer extent to image pixel coordinates
 minX,maxX,minY,maxY = lyr.GetExtent()
 ulX,ulY = world2Pixel(geoTrans,minX,maxY)
-llrX,lrY = world2Pixel(geoTrans,maxX,minY)
+lrX,lrY = world2Pixel(geoTrans,maxX,minY)
 
 #Calculate the pixel size of the new image
 pxWidth = int(lrX-ulX)
@@ -97,7 +98,7 @@ geoTrans[3] = maxY
 #Map points to pixels for drawig the field boundary on a blank
 #8-bit,b&w,mask image
 points = []
-pixels = ]
+pixels = []
 
 #Grab the polygon geometry
 geom = poly.GetGeometryRef()
@@ -142,20 +143,24 @@ gdal_array.numpy.seterr(all="ignore")
 #NDVI equation: (NIR-Red)/(NIR+Red)
 #*1.0 converts values to floats
 #+1.0 prevents ZeroDivisionErrors
-ndvi = 1.0 * ((irClip - rClip)/(irClip + rClip + 1.0))
+ndvi = 1.0 * (irClip - rClip) / irClip + rClip + 1.0
 
 #Convert any NaN values to zero
 ndvi = gdal_array.numpy.nan_to_num(ndvi)
 
 #Save ndvi as a GeoTiff and copy/adjust the georeferencing info
-gtiff = gdal.GetDriverByName('GTiff')
-gtiff.CreateCopy(target,copy_geo,ndvi,prototype=source,
-                 xoffset = ulX,yoffset=ulY))
-gtiff = None
+#gtiff = gdal.GetDriverByName('GTiff')
+#gtiff.CreateCopy(target,copy_geo(ndvi,prototype=source,xoffset = ulX,yoffset=ulY))
+#gtiff = None
     
-                  
 
+# Save ndvi as tiff
+gdalnumeric.SaveArray(ndvi, target,format="GTiff", prototype=srcImage)
 
-
+# Update georeferencing and NoData value
+update = gdal.Open(target, 1)
+update.SetGeoTransform(list(geoTrans))
+update.GetRasterBand(1).SetNoDataValue(0.0)
+update = None
 
     
