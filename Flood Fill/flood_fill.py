@@ -49,7 +49,8 @@ def floodFill(c,r,mask):
     return flood
 
 #1) Load the source and target data names
-source = "terrain.asc"
+#source = "F:/Python Projects/GeospatialPythonModels/Flood Fill/data/terrain.asc"
+source = "F:/Python Projects/GeospatialPythonModels/Flood Fill/data/garrisa.asc"
 target = "flood.asc"
 
 #Open the source
@@ -69,8 +70,8 @@ xres = cell
 yres = cell * -1
 
 #4) Define starting point for the flood inundation in pixel coordinates
-sx = 2582
-sy = 2057
+sx = 2279
+sy = 1660
 
 #5) Trigger flooFill function
 print("Beginning flood fill")
