@@ -73,8 +73,8 @@ for i in range(len(classes)):
         start = classes[i] + 1
 
 #Save a geotiff image of the colored ndvi
-    output = gd.SaveArray(rgb,target,format="GTiff",prototype=source)
-    output = None
+output = gd.SaveArray(rgb,target,format="GTiff",prototype=source)
+output = None
 
 
     
