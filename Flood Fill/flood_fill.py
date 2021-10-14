@@ -50,8 +50,10 @@ def floodFill(c,r,mask):
 
 #1) Load the source and target data names
 #source = "F:/Python Projects/GeospatialPythonModels/Flood Fill/data/terrain.asc"
-source = "F:/Python Projects/GeospatialPythonModels/Flood Fill/data/garrisa.asc"
-target = "flood.asc"
+source = "F:/Python Projects/GeospatialPythonModels/Flood Fill/data/nakuru.asc"
+
+#target = "flood.asc"
+target = "nakuru_flood.asc"
 
 #Open the source
 print("Opening the image...")
@@ -59,7 +61,7 @@ img = np.loadtxt(source,skiprows=6)
 print("Image opened")
 
 #2) Create a mask array of everything below 70 meters(Flood Elevation Value)
-wet = np.where(img<70,1,0)
+wet = np.where(img<1800,1,0)
 print("Image masked")
 
 #3) Parse the header using a loop and the built in linecahe module
@@ -70,8 +72,8 @@ xres = cell
 yres = cell * -1
 
 #4) Define starting point for the flood inundation in pixel coordinates
-sx = 2279
-sy = 1660
+sx = 421
+sy = 499
 
 #5) Trigger flooFill function
 print("Beginning flood fill")

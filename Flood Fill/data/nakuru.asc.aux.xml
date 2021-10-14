@@ -1,0 +1,24 @@
+<PAMDataset>
+  <Metadata>
+    <MDI key="AREA_OR_POINT">Area</MDI>
+    <MDI key="DataType">Generic</MDI>
+  </Metadata>
+  <Metadata domain="Esri">
+    <MDI key="PyramidResamplingType">NEAREST</MDI>
+  </Metadata>
+  <PAMRasterBand band="1">
+    <Description>Band_1</Description>
+    <ColorInterp>Gray</ColorInterp>
+    <Metadata>
+      <MDI key="BandName">Band_1</MDI>
+      <MDI key="RepresentationType">ATHEMATIC</MDI>
+      <MDI key="STATISTICS_COVARIANCES">69987.21412646376</MDI>
+      <MDI key="STATISTICS_MAXIMUM">2795</MDI>
+      <MDI key="STATISTICS_MEAN">2045.7961765162</MDI>
+      <MDI key="STATISTICS_MINIMUM">1743</MDI>
+      <MDI key="STATISTICS_SKIPFACTORX">1</MDI>
+      <MDI key="STATISTICS_SKIPFACTORY">1</MDI>
+      <MDI key="STATISTICS_STDDEV">264.55096697322</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>

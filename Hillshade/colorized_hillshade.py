@@ -10,7 +10,7 @@ except ImportError:
 
 #1)Set up variables for the inputs and outputs
 relief = "relief.asc"
-dem = "dem.asc"
+dem = "./data/nakuru.asc"
 target = "hillshade.tif"
 
 #2) Load the relief as the background image
@@ -41,7 +41,7 @@ start = 1
 for i in range(len(classes)):
     mask = gd.numpy.logical_and(start<= fg,fg<=classes[i])
     for j in range(len(lut[i])):
-        rgb[j] = gd.numpy.choose(mask,(rgb[j],lut[i],[j]))
+        rgb[j] = gd.numpy.choose(mask,(rgb[j],lut[i][j]))
         start = classes[i] + 1
 
 #6) Convert shaded relief,colorized DEM to images

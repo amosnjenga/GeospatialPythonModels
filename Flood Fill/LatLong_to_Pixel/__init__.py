@@ -27,5 +27,5 @@ class LatLong_to_Pixels:
         line = int((ulY - self.lat) / abs(yDist))
         return (pixel, line)
 
-x,y = LatLong_to_Pixels("F:/Python Projects/GeospatialPythonModels/Flood Fill/data/Garrisa.tif",39.633039,-0.461247).world2Pixel()
+x,y = LatLong_to_Pixels("F:/Python Projects/GeospatialPythonModels/Flood Fill/data/nakuru_terrain.tif",36.116864,-0.327858).world2Pixel()
 print(x,y)

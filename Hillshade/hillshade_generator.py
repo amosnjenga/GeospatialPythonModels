@@ -5,7 +5,8 @@ import numpy as np
 #Set variable names to define how the shaded relief is processed
 
 #DEM
-source = "dem.asc"
+#source = "dem.asc"
+source = "./data/nakuru.asc"
 
 #slope grid
 slopegrid = "slope.asc"
@@ -14,7 +15,7 @@ slopegrid = "slope.asc"
 aspectgrid = "aspect.asc"
 
 #output name for shaded relief/hillshade
-shadegrid = "relief.asc"
+shadedgrid = "relief.asc"
 
 #Shaded elevation parameters
 #Sun direction
@@ -25,6 +26,9 @@ altitude = 45.0
 
 #Elevation exaggeration
 z = 1.0
+
+#Resolution
+scale = 1.0
 
 #No data value for output
 NODATA = -9999
@@ -51,10 +55,8 @@ for row in range(3):
         window.append(arr[row:(row+arr.shape[0]-2),col:(col+arr.shape[1]-2)])
 
 #Process each 3x3 Window in bot the x and y directions
-x = ((z * window[0] + z * window[3] + z * window[3] + z * window[6]) -
-     (z * window[2] + z * window[5] + z * window[5] + z * window[8]))/ (8.0 * xres * scale)
-y = ((z * window[6] + z * window[7] + z * window[7] + z * window[8]) -
-     (z * window[0] + z * window[1] + z * window[1] + z * window[2]))/ (8.0 * yres * scale)
+x = ((z * window[0] + z * window[3] + z * window[3] + z * window[6]) - (z * window[2] + z * window[5] + z * window[5] + z * window[8]))/ (8.0 * xres * scale)
+y = ((z * window[6] + z * window[7] + z * window[7] + z * window[8]) - (z * window[0] + z * window[1] + z * window[1] + z * window[2]))/ (8.0 * yres * scale)
 
 #Calculate slope
 slope = 90.0 - np.arctan(np.sqrt(x * x + y * y)) * rad2deg
@@ -63,9 +65,8 @@ slope = 90.0 - np.arctan(np.sqrt(x * x + y * y)) * rad2deg
 aspect = np.arctan2(x,y)
 
 #Calculate the shaded relief
-shaded = np.sin(altitude * deg2rad) * np.sin(slope * deg2rad) +
-            np.cos(altitude * deg2rad) * np.cos(slope * deg2rad) *
-            np.cos((azimuth - 90.0) * deg2rad - aspect)
+shaded = np.sin(altitude * deg2rad) * np.sin(slope * deg2rad) + np.cos(altitude * deg2rad) * np.cos(slope * deg2rad) * \
+         np.cos((azimuth - 90.0) * deg2rad - aspect)
 
 #Scale values from 0-1 to 0-255
 shaded = shaded * 255
