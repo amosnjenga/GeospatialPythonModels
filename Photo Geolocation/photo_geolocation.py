@@ -46,26 +46,30 @@ def gps(exif):
         #Lat
         coords = exif['GPSInfo']
         i = coords[1]
-        d = coords[2][0][0]
-        m = coords[2][1][0]
-        s = coords[2][2][0]
+        temp_coords = list(coords[2])
+        d = temp_coords[0]
+        m = temp_coords[1]
+        s = temp_coords[2]
         lat = dms2dd(d,m,s,i)
         #Lon
         i = coords[3]
-        d = coords[4][0][0]
-        m = coords[4][1][0]
-        s = coords[4][2][0]
+        temp_coords = list(coords[4])
+        d = temp_coords[0]
+        m = temp_coords[1]
+        s = temp_coords[2]
+        lon = dms2dd(d, m, s, i)
     return lat,lon
 
 #3) Loop through photos,extract the coordinates,and store the coordninates
 #and filenames in a dictionary
 photos = {}
-photos_dir = "./photos"
-files = glob.glob(os.path.join(photo_dir,"*.jpg"))
+photos_dir = './photos'
+files = glob.glob(os.path.join(photos_dir,"*.jpg"))
 for f in files:
     e = exif(f)
     lat,lon = gps(e)
     photos[f] = [lon,lat]
+
 
 #4) Save the photo information as a shapefile
 with shapefile.Writer("photos",shapefile.POINT) as w:
