@@ -36,7 +36,7 @@ def astar(start,end,h,g):
     #sets to keep track of the path progress
     closed_set = set()
     open_set = set()
-    path = set ()
+    path = set()
 
     #Add starting cell to open list of cells and in order to
     #process & begin looping through that set

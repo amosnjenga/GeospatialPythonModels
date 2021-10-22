@@ -6,10 +6,10 @@ import pickle
 
 #1) Define input and output data sources
 #Source Terrain data
-source = "dem.asc"
+source = "./data/dem.asc"
 
 #output filename for the path raster
-target = "path.asc"
+target = "./data/path.asc"
 
 #2) Load the grid skipping over the head
 print("Opening %s..." % source)
@@ -54,7 +54,7 @@ def weighted_score(cur,node,h,start,end):
     # current node distance from end
     cur_g = e_dist(cur,end)
     # current node distance from start
-    cur_d e_dist(cur,start)
+    cur_d = e_dist(cur,start)
 
     #2) Examine neighbouring nodes to make decision where to move
     #neighbour node elevation
@@ -89,8 +89,8 @@ def astar(start,end,h):
     path = set()
 
     #Add the starting point to begin processing
-    open_set.ass(start)
-    while open_start:
+    open_set.add(start)
+    while open_set:
         #Grab the next node
         cur  = open_set.pop()
         #Return if we're at the end
@@ -107,7 +107,7 @@ def astar(start,end,h):
         y1 = cur[0]
         x1 = cur[1]
         if y1 > 0:
-            options.append((y1-1,x-1))
+            options.append((y1-1,x1-1))
         if y1 < h.shape[0]-1:
             options.append((y1+1,x1))
         if x1 > 0:
@@ -148,9 +148,9 @@ def astar(start,end,h):
                 else:
                     #If node isn't better seal it off
                     closed_set.add(option)
-                    #print(best,e_dist(best,end)) # Uncomment this to watch the path develop in real time
-                    open_set.add(best)
-        return []
+                    print(best,e_dist(best,end)) # Uncomment this to watch the path develop in real time
+        open_set.add(best)
+    return []
 
 ###Generating path
 print("Searching for path...")
@@ -170,22 +170,18 @@ print("Path plotted.")
 print("Saving %s..." % target)
 header = ""
 for i in range(6):
- header += hdr[i]
+    header += hdr[i]
+
 # Open the output file, add the hdr, save the array
 with open(target, "wb") as f:
- f.write(bytes(header, 'UTF-8'))
- np.savetxt(f, path, fmt="%4i")
+    f.write(bytes(header, 'UTF-8'))
+    np.savetxt(f, path, fmt="%4i")
 
 #Save data as a pickle python object for creating vector shapefile
 print("Saving path data...")
 with open("path.p", "wb") as pathFile:
- pickle.dump(p, pathFile)
+    pickle.dump(p, pathFile)
 print("Done!")
 
 
 
-
-
-    
-    
-    
