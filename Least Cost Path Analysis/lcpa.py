@@ -1,12 +1,17 @@
 #Import libraries
 import numpy as np
-import math
+import math,shapefile
 from linecache import getline
 import pickle
+from osgeo import gdal
 
 #1) Define input and output data sources
 #Source Terrain data
 source = "./data/dem.asc"
+
+asc = gdal.Open(source)
+gt = asc.GetGeoTransform()
+print(gt)
 
 #output filename for the path raster
 target = "./data/path.asc"
@@ -19,6 +24,7 @@ print("Opened %s." % source)
 #3)Parse the header for geospatial and grid size info
 hdr = [getline(source,i) for i in range(1,7)]
 values = [float(ln.split(" ")[-1].strip()) for ln in hdr]
+print(values)
 cols,rows,lx,ly,cell,nd = values
 
 #4) Define starting and end locations
@@ -68,7 +74,7 @@ def weighted_score(cur,node,h,start,end):
     #by progress towards the goal
     if node_h < cur_h:
         score += cur_h - node_h
-    if node_g  < cur_g:
+    if node_g < cur_g:
         score += 10
     if node_d > cur_d:
         score += 10
@@ -92,7 +98,7 @@ def astar(start,end,h):
     open_set.add(start)
     while open_set:
         #Grab the next node
-        cur  = open_set.pop()
+        cur = open_set.pop()
         #Return if we're at the end
         if cur == end:
             return path
@@ -107,7 +113,7 @@ def astar(start,end,h):
         y1 = cur[0]
         x1 = cur[1]
         if y1 > 0:
-            options.append((y1-1,x1-1))
+            options.append((y1-1,x1))
         if y1 < h.shape[0]-1:
             options.append((y1+1,x1))
         if x1 > 0:
@@ -148,22 +154,51 @@ def astar(start,end,h):
                 else:
                     #If node isn't better seal it off
                     closed_set.add(option)
-                    print(best,e_dist(best,end)) # Uncomment this to watch the path develop in real time
+                    #print(best,e_dist(best,end)) # Uncomment this to watch the path develop in real time
         open_set.add(best)
     return []
 
+#Function to convert pixel to lat lon
+def pix2coord(gt,x,y):
+    gt = list(gt)
+    x_min = gt[0]
+    x_size = gt[1]
+    y_min = gt[3]
+    y_size = gt[5]
+
+    cx = x * x_size + x_min  # x pixel
+    cy = y * y_size + y_min  # y pixel
+    return cx, cy
+
 ###Generating path
 print("Searching for path...")
-p = astar((sy,sx,),(dy,dx),cost)
+p = astar((sy,sx),(dy,dx),cost)
+print(p)
 print("Path found.")
 print("Creating path grid...")
+
+#pixel to coordinates
+coords = []
+
+#creating path image
 path = np.zeros(cost.shape)
 print("Plotting path...")
 
 for y,x in p:
     path[y][x] = 1
-    path[dy][dx] = 1
+    print(y,x)
+    coords.append(pix2coord(gt,x,y))
+path[dy][dx] = 1
 print("Path plotted.")
+
+#Coordinates for shapefile
+print(coords)
+starting_point = pix2coord(gt,sx,sy)
+starting_point = list(starting_point)
+s = sorted(coords, key = lambda a: (a[0], a[1]))
+#print(s)
+
+
 
 
 #Save path as an ASCII Grid
@@ -182,6 +217,14 @@ print("Saving path data...")
 with open("path.p", "wb") as pathFile:
     pickle.dump(p, pathFile)
 print("Done!")
+
+
+#Write data to shapefile
+with shapefile.Writer("path", shapeType=shapefile.POLYLINE) as w:
+    w.field("NAME")
+    w.record("LeastCostPath")
+    w.line([[list(p) for p in s]])
+    w.close()
 
 
 
